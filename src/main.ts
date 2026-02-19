@@ -17,7 +17,7 @@ import { routingControllersToSpec } from 'routing-controllers-openapi';
 import * as swaggerUiExpress from 'swagger-ui-express';
 import { buildSchema } from 'type-graphql';
 import bodyParser from 'body-parser';
-
+import cors from 'cors';
 export class App {
   private app: express.Application = express();
   private port: Number = appConfig.port;
@@ -73,6 +73,13 @@ export class App {
   }
 
   private setupMiddlewares() {
+    this.app.use(
+      cors({
+        origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003', 'https://www.bsceglobal.com'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+      }),
+    );
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(bodyParser.json());
     loadHelmet(this.app);

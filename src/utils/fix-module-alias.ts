@@ -1,4 +1,4 @@
-import ModuleAlias from 'module-alias';
+import * as ModuleAlias from 'module-alias';
 
 export function fixModuleAlias(dirName: string) {
   ModuleAlias.addAliases({

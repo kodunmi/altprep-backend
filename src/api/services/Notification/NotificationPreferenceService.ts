@@ -25,6 +25,8 @@ export class NotificationPreferenceService {
         user_id: userId,
         type,
         enabled: true,
+        created_at: new Date(),
+        updated_at: new Date(),
       }),
     );
 
@@ -50,9 +52,12 @@ export class NotificationPreferenceService {
         user_id: userId,
         type,
         enabled,
+        created_at: new Date(),
+        updated_at: new Date(),
       });
     } else {
       pref.enabled = enabled;
+      pref.updated_at = new Date();
     }
 
     return this.preferenceRepo.save(pref);

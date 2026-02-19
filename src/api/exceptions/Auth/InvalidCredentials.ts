@@ -8,6 +8,6 @@ export class InvalidCredentials extends UnauthorizedError {
 
 export class UserNotFound extends UnauthorizedError {
   constructor() {
-    super('This email hasn’t been onboarded by any school yet. Please contact your school administrator.');
+    super('This user does not exist!');
   }
 }

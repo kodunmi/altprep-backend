@@ -13,7 +13,7 @@ import { NotificationTypeEnum } from '@base/api/interfaces/notification/Notifica
 
 @Service()
 export class NotificationService {
- private fromValue: string = mailConfig.fromName + ' ' + mailConfig.authUser;
+  private fromValue: string = mailConfig.fromName + ' ' + mailConfig.authUser;
 
   private emailProvider?: SmtpProvider;
   private dbPayload: any = {};
@@ -23,7 +23,6 @@ export class NotificationService {
     private readonly notificationRepo: Repository<Notification>,
 
     private preferenceService: NotificationPreferenceService,
-
   ) {}
 
   public setFrom(value: string) {
@@ -32,7 +31,7 @@ export class NotificationService {
     return this;
   }
 
-  public setTo(to: {userId?: number, email?: string}) {
+  public setTo(to: { userId?: number; email?: string }) {
     const { userId, email } = to;
     if (!this.emailProvider) this.emailProvider = new SmtpProvider();
     this.emailProvider.to(String(email));
@@ -96,25 +95,17 @@ export class NotificationService {
       category,
       details: this.dbPayload.details ?? null,
       read: false,
+      created_at: new Date(),
+      updated_at: new Date(),
     });
 
     return await this.notificationRepo.save(entity);
   }
 
   public async getAll(userId: number, filters: NotificationFiltersQuery) {
-    const {
-      category,
-      range,
-      status,
-      search,
-      limit = 20,
-      offset = 0,
-      order = 'newest',
-    } = filters;
+    const { category, range, status, search, limit = 20, offset = 0, order = 'newest' } = filters;
 
-    const qb = this.notificationRepo
-      .createQueryBuilder('n')
-      .where('n.user_id = :userId', { userId });
+    const qb = this.notificationRepo.createQueryBuilder('n').where('n.user_id = :userId', { userId });
 
     if (category) qb.andWhere('n.category = :category', { category });
 
@@ -162,20 +153,14 @@ export class NotificationService {
   }
 
   public async readAll(userId: number) {
-    await this.notificationRepo.update(
-      { user_id: userId, read: false },
-      { read: true },
-    );
+    await this.notificationRepo.update({ user_id: userId, read: false }, { read: true });
     return true;
   }
 
   public async markSpecificAsRead(userId: number, ids: number[]) {
     if (!ids?.length) return [];
 
-    await this.notificationRepo.update(
-      { user_id: userId, id: In(ids), read: false },
-      { read: true }
-    );
+    await this.notificationRepo.update({ user_id: userId, id: In(ids), read: false }, { read: true });
 
     const updated = await this.notificationRepo.find({
       where: { user_id: userId, id: In(ids), read: true },

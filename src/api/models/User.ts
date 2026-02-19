@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { EntityBase } from '@base/infrastructure/abstracts/EntityBase';
 import { Exclude, Expose } from 'class-transformer';
@@ -16,6 +17,7 @@ import { Role } from './Role';
 import { HashService } from '@base/infrastructure/services/hash/HashService';
 import { Track } from './Track';
 import { Badge } from './Badge';
+import { Transaction } from './Payments/Transaction';
 
 @Entity({ name: 'users' })
 export class User extends EntityBase {
@@ -38,13 +40,19 @@ export class User extends EntityBase {
   @Column()
   role_id: number;
 
-  @Column()
-  phone_number: string;
+  @Column({
+    nullable: true,
+  })
+  phone_number?: string;
 
-  @Column()
+  @Column({
+    default: false,
+  })
   is_active: boolean;
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   bio?: string;
 
   @Column({ name: 'avatar_url', type: 'varchar', length: 500, nullable: true })
@@ -62,11 +70,29 @@ export class User extends EntityBase {
   @UpdateDateColumn({ name: 'updated_at' })
   updated_at: Date;
 
+  @Column({ nullable: true })
+  verifiedAt: Date;
+
+  @Column({ nullable: true })
+  verificationCode: number;
+
+  @BeforeInsert()
+  async setVerificationCode() {
+    if (!this.verificationCode) {
+      this.verificationCode = Math.floor(100000 + Math.random() * 900000);
+    }
+  }
+
+  @BeforeInsert()
+  async setEmail() {
+    if (this.email) this.email = this.email.toLowerCase();
+  }
+
   /* --------------------  RELATIONSHIPS  -------------------- */
 
-  @OneToOne(() => Role)
+  @ManyToOne(() => Role, { nullable: false })
   @JoinColumn({ name: 'role_id' })
-  role: Role;
+  role?: Role;
 
   @Expose({ name: 'full_name' })
   get fullName() {
@@ -85,7 +111,7 @@ export class User extends EntityBase {
     this.role_id = roleId;
   }
 
-    /* --------------------  RELATIONSHIPS  -------------------- */
+  /* --------------------  RELATIONSHIPS  -------------------- */
 
   @ManyToOne(() => Track, (track) => track.users, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'track_id' })
@@ -94,4 +120,7 @@ export class User extends EntityBase {
   @ManyToOne(() => Badge, (badge) => badge.users, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'badge_id' })
   badge?: Badge;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.user)
+  transactions: Transaction[];
 }

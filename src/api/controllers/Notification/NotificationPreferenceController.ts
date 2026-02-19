@@ -1,35 +1,43 @@
-import { JsonController, Get, Put, Body, CurrentUser, UseBefore } from 'routing-controllers';
+import { JsonController, Get, Put, Body, CurrentUser, UseBefore, Res } from 'routing-controllers';
 import { Service } from 'typedi';
-import { User } from '@base/api/models/User';
-import { NotificationPreferenceService } from '@base/api/services/Notification/NotificationPreferenceService';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { AuthCheck } from '@base/infrastructure/middlewares/Auth/AuthCheck';
+import { ControllerBase } from '@base/infrastructure/abstracts/ControllerBase';
+import { NotificationPreferenceService } from '@base/api/services/Notification/NotificationPreferenceService';
 import { UpdatePreferenceRequest } from '@base/api/requests/Notification/NotificationRequest';
+import { Response } from 'express';
+import { LoggedUserInterface } from '@api/interfaces/users/LoggedUserInterface';
 
 @JsonController('/settings/preferences')
 @Service()
 @UseBefore(AuthCheck)
 @OpenAPI({ security: [{ bearerAuth: [] }] })
-export class NotificationPreferenceController {
-  constructor(private preferenceService: NotificationPreferenceService) {}
+export class NotificationPreferenceController extends ControllerBase {
+  constructor(private preferenceService: NotificationPreferenceService) {
+    super();
+  }
 
   @Get('/')
-  async list(@CurrentUser() user: User) {
-    await this.preferenceService.initializeUserPreferences(user.id);
+  async list(@CurrentUser() user: LoggedUserInterface, @Res() res: Response) {
+    try {
+      await this.preferenceService.initializeUserPreferences(user.id);
 
-    const preference = await this.preferenceService.listUserPreferences(user.id);
+      const preference = await this.preferenceService.listUserPreferences(user.id);
 
-    return {
-      status: true,
-      message: 'Notification preference fetched successfully',
-      data: preference,
-    };
+      return this.response(res, 'Notification preferences fetched successfully', preference, 'success');
+    } catch (error) {
+      return this.response(res, error.message || 'Failed to fetch notification preferences', null, 'error');
+    }
   }
 
   @Put()
-  async update(@CurrentUser() user: User, @Body() body: UpdatePreferenceRequest) {
-    const updated = await this.preferenceService.update(user.id, body.type, body.enabled);
+  async update(@CurrentUser() user: LoggedUserInterface, @Body() body: UpdatePreferenceRequest, @Res() res: Response) {
+    try {
+      const updated = await this.preferenceService.update(user.id, body.type, body.enabled);
 
-    return updated;
+      return this.response(res, 'Notification preference updated successfully', updated, 'success');
+    } catch (error) {
+      return this.response(res, error.message || 'Failed to update notification preference', null, 'error');
+    }
   }
 }

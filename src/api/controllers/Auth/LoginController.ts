@@ -1,4 +1,4 @@
-import { JsonController, Body, Post } from 'routing-controllers';
+import { JsonController, Body, Post, Res } from 'routing-controllers';
 import { Service } from 'typedi';
 import { LoginRequest } from '@api/requests/Auth/LoginRequest';
 import { LoginService } from '@api/services/Auth/LoginService';
@@ -6,6 +6,7 @@ import { ControllerBase } from '@base/infrastructure/abstracts/ControllerBase';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { NotificationService } from '@base/api/services/Notification/NotificationService';
 import { NotificationTypeEnum } from '@base/api/interfaces/notification/NotificationInterface';
+import { Response } from 'express';
 
 @Service()
 @OpenAPI({
@@ -21,7 +22,7 @@ export class LoginController extends ControllerBase {
   }
 
   @Post('/login')
-  public async login(@Body() user: LoginRequest) {
+  public async login(@Body() user: LoginRequest, @Res() res: Response) {
     try {
       const authorization = await this.loginService.login(user);
       
@@ -38,13 +39,13 @@ export class LoginController extends ControllerBase {
         time: new Date().toISOString(),
       })
       .sendToDB()
-      return {
-        status: true,
-        message: 'Login successful',
-        data: authorization,
-      }
+
+      return this.response(res, 'Login Success', authorization, 'success');
+      
     } catch (error) {
-      throw error;
+
+       return this.response(res, error.message, null, 'error');
+     
     }
   }
 }

@@ -31,10 +31,11 @@ export class LoginService {
       {
         id: user.id,
         email: user.email,
-        role_id: user.role_id,
-        role: user.role.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        is_active: user.is_active,
       },
-      { user: { id: user.id, email: user.email, role: user.role.name } },
+      { user: { id: user.id, email: user.email, first_name: user.first_name, last_name: user.last_name, is_active: user.is_active } },
     );
   }
 }
