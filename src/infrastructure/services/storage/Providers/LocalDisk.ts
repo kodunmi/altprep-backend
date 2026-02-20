@@ -17,7 +17,7 @@ export class LocalDisk {
 
       if (dir === filePath.trim()) return reject(new Error('The path is invalid!'));
 
-      fs.writeFile(filePath, content, { encoding } as fs.BaseEncodingOptions, (error) => {
+      fs.writeFile(filePath, content, { encoding } as fs.ObjectEncodingOptions, (error) => {
         if (error) return reject(error);
         resolve();
       });
