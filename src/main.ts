@@ -163,7 +163,7 @@ export class App {
     );
 
     // Use Swagger
-    this.app.use('/docs', ...swaggerUiExpress.serve, swaggerUiExpress.setup(spec));
+    this.app.use('/docs', ...(swaggerUiExpress.serve as any), swaggerUiExpress.setup(spec) as any);
   }
 
   private async setupGraphQL() {
