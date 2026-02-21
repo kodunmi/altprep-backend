@@ -75,7 +75,14 @@ export class App {
   private setupMiddlewares() {
     this.app.use(
       cors({
-        origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://localhost:3003', 'https://www.bsceglobal.com'],
+        origin: [
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'http://localhost:3002',
+          'http://localhost:3003',
+          'https://app.altprepschool.com',
+          'https://www.altprepschool.com',
+        ],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allowedHeaders: ['Content-Type', 'Authorization'],
       }),
