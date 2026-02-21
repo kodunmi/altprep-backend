@@ -109,10 +109,6 @@
     "url": "https://github.com/kutia-software-company/express-typescript-starter/issues"
   },
   "homepage": "https://github.com/kutia-software-company/express-typescript-starter#readme",
-  "overrides": {
-    "@types/express": "^4.17.21",
-    "@types/express-serve-static-core": "^4.17.21"
-  },
   "engines": {
     "node": ">=20.0.0 <22.0.0"
   }
