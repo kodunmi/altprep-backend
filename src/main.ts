@@ -20,7 +20,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 export class App {
   private app: express.Application = express();
-  private port: Number = appConfig.port;
+  private port: number = Number(process.env.PORT) || appConfig.port;
 
   public constructor() {
     this.bootstrap();
