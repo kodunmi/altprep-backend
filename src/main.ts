@@ -39,6 +39,8 @@ export class App {
     this.setupSwagger();
     await this.setupGraphQL();
     // this.register404Page()
+
+    console.log('Check if this logs');
   }
 
   private useContainers() {
