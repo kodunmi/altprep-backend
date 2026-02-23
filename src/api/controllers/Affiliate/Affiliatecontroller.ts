@@ -4,6 +4,7 @@ import { JsonController, Get, Post, Body, Req, Res, Param, QueryParam, UseBefore
 import { AffiliateService } from '@base/api/services/Affiliate/Affiliateservice';
 import { AuthCheck } from '@base/infrastructure/middlewares/Auth/AuthCheck';
 import { LoggedUserInterface } from '@base/api/interfaces/users/LoggedUserInterface';
+import { OpenAPI } from 'routing-controllers-openapi/build';
 
 interface RegisterAffiliateBody {
   businessName?: string;
@@ -13,6 +14,9 @@ interface RegisterAffiliateBody {
 }
 
 @Service()
+@OpenAPI({
+  tags: ['Affiliates'],
+})
 @JsonController('/affiliates')
 export class AffiliateController {
   constructor(private affiliateService: AffiliateService) {}
