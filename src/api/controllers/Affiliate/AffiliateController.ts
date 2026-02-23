@@ -1,7 +1,7 @@
 import { Service } from 'typedi';
 import { Request, Response } from 'express';
 import { JsonController, Get, Post, Body, Req, Res, Param, QueryParam, UseBefore, CurrentUser } from 'routing-controllers';
-import { AffiliateService } from '@base/api/services/Affiliate/Affiliateservice';
+import { AffiliateService } from '@base/api/services/Affiliate/AffiliateService';
 import { AuthCheck } from '@base/infrastructure/middlewares/Auth/AuthCheck';
 import { LoggedUserInterface } from '@base/api/interfaces/users/LoggedUserInterface';
 import { OpenAPI } from 'routing-controllers-openapi/build';

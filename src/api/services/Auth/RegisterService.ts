@@ -62,7 +62,7 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 import { EventDispatcher, EventDispatcherInterface } from '@base/decorators/EventDispatcher';
 import { AuthService } from '@base/infrastructure/services/auth/AuthService';
 import { PaymentService } from '@api/services/Payments/PaymentService';
-import { AffiliateService } from '../Affiliate/Affiliateservice';
+import { AffiliateService } from '../Affiliate/AffiliateService';
 
 @Service()
 export class RegisterService {

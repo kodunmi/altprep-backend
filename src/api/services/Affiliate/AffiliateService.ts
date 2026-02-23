@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as crypto from 'crypto';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { UserService } from '@api/services/Users/UserService';
-import { AffiliateProfileRepository } from '@base/api/repositories/Affiliate/Affiliateprofilerepository';
+import { AffiliateProfileRepository } from '@base/api/repositories/Affiliate/AffiliateprofileRepository';
 import { ReferralRepository } from '@base/api/repositories/Affiliate/Referralrepository';
 import { AffiliateProfile } from '@base/api/models/AffiliateProfile';
 import { Referral } from '@base/api/models/Referral';

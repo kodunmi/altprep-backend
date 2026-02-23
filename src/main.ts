@@ -18,6 +18,8 @@ import * as swaggerUiExpress from 'swagger-ui-express';
 import { buildSchema } from 'type-graphql';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import * as glob from 'glob';
+
 export class App {
   private app: express.Application = express();
   private port: number = Number(process.env.PORT) || appConfig.port;
@@ -40,7 +42,10 @@ export class App {
     await this.setupGraphQL();
     // this.register404Page()
 
-    console.log('Check if this logs');
+    console.log('Check if this logs', __dirname, __dirname + appConfig.controllersDir);
+
+    const controllerFiles = glob.sync(__dirname + appConfig.controllersDir);
+    console.log('Controllers found:', controllerFiles);
   }
 
   private useContainers() {
