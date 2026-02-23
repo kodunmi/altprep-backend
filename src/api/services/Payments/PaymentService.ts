@@ -5,7 +5,7 @@ import { EventDispatcher, EventDispatcherInterface } from '@base/decorators/Even
 import { TransactionRepository } from '@api/repositories/Payments/TransactionRepository';
 import { UserService } from '@api/services/Users/UserService';
 import { InjectRepository } from 'typeorm-typedi-extensions';
-import { AffiliateProfileRepository } from '@base/api/repositories/Affiliate/AffiliateprofileRepository';
+import { AffiliateProfileRepository } from '@base/api/repositories/Affiliate/AffiliateProfileRepository';
 import { AffiliateService } from '../Affiliate/AffiliateService';
 import { SmtpProvider } from '@base/infrastructure/services/mail/Providers/SmtpProvider';
 import { EmailNotificationTemplateEnum } from '@base/infrastructure/services/mail/Interfaces/templateInterface';

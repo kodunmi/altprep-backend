@@ -3,10 +3,10 @@ import axios from 'axios';
 import * as crypto from 'crypto';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { UserService } from '@api/services/Users/UserService';
-import { AffiliateProfileRepository } from '@base/api/repositories/Affiliate/AffiliateprofileRepository';
-import { ReferralRepository } from '@base/api/repositories/Affiliate/Referralrepository';
+import { ReferralRepository } from '@api/repositories/Affiliate/ReferralRepository';
 import { AffiliateProfile } from '@base/api/models/AffiliateProfile';
 import { Referral } from '@base/api/models/Referral';
+import { AffiliateProfileRepository } from '@api/repositories/Affiliate/AffiliateProfileRepository';
 
 const PAYSTACK_BASE = 'https://api.paystack.co';
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY!;
