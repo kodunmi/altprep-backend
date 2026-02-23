@@ -4,18 +4,18 @@ import { InjectRepository } from 'typeorm-typedi-extensions';
 import { Notification } from '@api/models/Notification';
 import { BadRequestError, NotFoundError } from 'routing-controllers';
 import { parseDateRange } from '@base/utils/date';
-import { EmailNotificationTemplateEnum, SmtpProvider } from '@base/infrastructure/services/mail/Providers/SmtpProvider';
 import { mailConfig } from '@base/config/mail';
 import { NotificationFiltersQuery } from '@base/api/requests/Notification/NotificationRequest';
 import { NotificationPreference } from '@base/api/models/NotificationPreference';
 import { NotificationPreferenceService } from './NotificationPreferenceService';
 import { NotificationTypeEnum } from '@base/api/interfaces/notification/NotificationInterface';
+import { EmailNotificationTemplateEnum } from '@base/infrastructure/services/mail/Interfaces/templateInterface';
+import { MailService } from '@base/infrastructure/services/mail/MailService'; // ← added
 
 @Service()
 export class NotificationService {
-  private fromValue: string = mailConfig.fromName + ' ' + mailConfig.authUser;
-
-  private emailProvider?: SmtpProvider;
+  private mailService: MailService;
+  private fromValue: string = mailConfig.fromName + ' <' + mailConfig.fromEmail + '>';
   private dbPayload: any = {};
 
   constructor(
@@ -23,33 +23,44 @@ export class NotificationService {
     private readonly notificationRepo: Repository<Notification>,
 
     private preferenceService: NotificationPreferenceService,
-  ) {}
+
+    // Option A: best – let typedi inject MailService
+    mailService: MailService,
+  ) {
+    this.mailService = mailService;
+  }
+
+  // ───────────────────────────────────────────────
+  // All public chainable methods remain exactly the same in name and signature
+  // ───────────────────────────────────────────────
 
   public setFrom(value: string) {
     this.fromValue = value;
-    if (this.emailProvider) this.emailProvider.from(value);
+    this.mailService.from(value);
     return this;
   }
 
   public setTo(to: { userId?: number; email?: string }) {
     const { userId, email } = to;
-    if (!this.emailProvider) this.emailProvider = new SmtpProvider();
-    this.emailProvider.to(String(email));
+
+    if (!email) {
+      throw new BadRequestError('Email is required when sending notification via email');
+    }
+
+    this.mailService.to(email);
     this.dbPayload.userId = Number(userId);
     return this;
   }
 
   public setSubject(subject: string) {
-    if (!this.emailProvider) this.emailProvider = new SmtpProvider();
-    this.emailProvider.subject(subject);
+    this.mailService.subject(subject);
     this.dbPayload.title = subject;
     return this;
   }
 
   public setMessage(message: string) {
-    if (!this.emailProvider) this.emailProvider = new SmtpProvider();
-    this.emailProvider.text(message);
-    this.emailProvider.html(`<p>${message}</p>`);
+    this.mailService.text(message);
+    this.mailService.html(`<p>${message}</p>`);
     this.dbPayload.message = message;
     return this;
   }
@@ -65,17 +76,18 @@ export class NotificationService {
   }
 
   public useTemplate(template: EmailNotificationTemplateEnum, data: Record<string, any>) {
-    if (!this.emailProvider) this.emailProvider = new SmtpProvider();
-    this.emailProvider.htmlView(template, data);
+    this.mailService.htmlView(template, data);
     return this;
   }
 
   public async sendViaEmail() {
-    if (!this.emailProvider) {
-      throw new BadRequestError('Email provider not initialized. Use setTo() or setSubject() first.');
+    if (!this.mailService['toValue'] || !this.mailService['subjectValue']) {
+      // rough check – or improve later
+      throw new BadRequestError('Email not fully configured. to() and subject() are required.');
     }
-    this.emailProvider.from(this.fromValue);
-    return await this.emailProvider.send();
+
+    this.mailService.from(this.fromValue); // ensure from is set last (override if needed)
+    return await this.mailService.send();
   }
 
   public async sendToDB() {
@@ -101,6 +113,10 @@ export class NotificationService {
 
     return await this.notificationRepo.save(entity);
   }
+
+  // ───────────────────────────────────────────────
+  // The rest of your methods remain completely unchanged
+  // ───────────────────────────────────────────────
 
   public async getAll(userId: number, filters: NotificationFiltersQuery) {
     const { category, range, status, search, limit = 20, offset = 0, order = 'newest' } = filters;

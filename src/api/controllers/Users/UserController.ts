@@ -29,8 +29,6 @@ export class UserController extends ControllerBase {
     const resourceOptions = {};
     const parseResourceOptions = new RequestQueryParser();
 
-    console.log('logged in user', user);
-
     try {
       const userData = await this.userService.findOneById(user.id, resourceOptions);
 

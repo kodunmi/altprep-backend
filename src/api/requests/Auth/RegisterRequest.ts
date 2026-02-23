@@ -23,4 +23,6 @@ export class RegisterRequest {
   @IsString()
   @IsNotEmpty()
   password: string;
+
+  referralCode?: string;
 }

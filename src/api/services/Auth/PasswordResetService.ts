@@ -8,7 +8,9 @@ import { UserNotFound } from '@base/api/exceptions/Auth/InvalidCredentials';
 import { randomIntegers } from '@base/utils/string';
 import { authConfig } from '@base/config/auth';
 import { HashService } from '@base/infrastructure/services/hash/HashService';
-import { EmailNotificationTemplateEnum, SmtpProvider } from '@base/infrastructure/services/mail/Providers/SmtpProvider';
+import { SmtpProvider } from '@base/infrastructure/services/mail/Providers/SmtpProvider';
+import { EmailNotificationTemplateEnum } from '@base/infrastructure/services/mail/Interfaces/templateInterface';
+import { MailService } from '@base/infrastructure/services/mail/MailService';
 
 @Service()
 export class PasswordResetService {
@@ -31,7 +33,7 @@ export class PasswordResetService {
       expires_at: addMinutes(new Date(), authConfig.resetTokenExpiresIn),
     });
 
-    await new SmtpProvider()
+    await new MailService()
       .to(email)
       .subject('Password Reset Code')
       .htmlView(EmailNotificationTemplateEnum.reset_password, { name: 'John Doe', expires: authConfig.resetTokenExpiresIn, token })
@@ -49,7 +51,7 @@ export class PasswordResetService {
     const user = await this.userRepo.findOne({ where: { email: reset.email } });
     if (!user) throw new UserNotFound();
 
-    user.password = await new HashService().make(newPassword) ;
+    user.password = await new HashService().make(newPassword);
     await this.userRepo.save(user);
 
     // remove token so it cannot be reused

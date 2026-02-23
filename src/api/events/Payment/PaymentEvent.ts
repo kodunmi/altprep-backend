@@ -1,7 +1,9 @@
 import { User } from '@base/api/models/User';
-import { SmtpProvider, EmailNotificationTemplateEnum } from '@base/infrastructure/services/mail/Providers/SmtpProvider';
+import { SmtpProvider } from '@base/infrastructure/services/mail/Providers/SmtpProvider';
 import { EventSubscriber, On } from 'event-dispatch';
 import { Transaction } from '@base/api/models/Payments/Transaction';
+import { EmailNotificationTemplateEnum } from '@base/infrastructure/services/mail/Interfaces/templateInterface';
+import { MailService } from '@base/infrastructure/services/mail/MailService';
 
 @EventSubscriber()
 export class PaymentEvent {
@@ -32,16 +34,14 @@ export class PaymentEvent {
     });
 
     // Capitalize payment method
-    const paymentMethod = data.transaction.paymentMethod 
+    const paymentMethod = data.transaction.paymentMethod
       ? data.transaction.paymentMethod.charAt(0).toUpperCase() + data.transaction.paymentMethod.slice(1)
       : 'N/A';
 
     // Capitalize status
-    const status = data.transaction.status 
-      ? data.transaction.status.charAt(0).toUpperCase() + data.transaction.status.slice(1)
-      : 'Completed';
+    const status = data.transaction.status ? data.transaction.status.charAt(0).toUpperCase() + data.transaction.status.slice(1) : 'Completed';
 
-    await new SmtpProvider()
+    await new MailService()
       .to(data.user.email)
       .subject('Payment Receipt - Transaction Successful')
       .htmlView(EmailNotificationTemplateEnum.paymentReceipt, {
